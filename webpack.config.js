@@ -9,6 +9,7 @@ const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
 const APP_DIR = path.resolve(__dirname, 'client');
 const BUILD_DIR = path.resolve(__dirname, 'client/build');
 module.exports = {
+    devtool: 'source-map',
     entry: APP_DIR + '/index.js',
     output: {
         path: BUILD_DIR,
