@@ -5,19 +5,23 @@ export default class Timer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            timerValue: this.props.initialTimerValue,
-            timerStarted: false,
-            interval: null
+            secondsLeft: this.props.initialTimerValue,
+            started: false,
+            interval: null,
+            notifiactionsEnabled: false
         }
         this.toggleStartStop = this.toggleStartStop.bind(this);
         this.countDown = this.countDown.bind(this);
         this.stopCountDown = this.pauseCountDown.bind(this);
         this.timerFinished = this.timerFinished.bind(this);
+        this.askNotificationsPermission = this.askNotificationsPermission.bind(this);
+
+        this.askNotificationsPermission();
     }
 
     render() {
-        let min = Math.floor(this.state.timerValue / 60);
-        let sec = this.state.timerValue - min * 60;
+        let min = Math.floor(this.state.secondsLeft / 60);
+        let sec = this.state.secondsLeft - min * 60;
         return (
             <div className={'timer'}>
                 <h1>
@@ -25,17 +29,27 @@ export default class Timer extends React.Component {
                     <span>:</span>
                     <span>{sec < 10 ? '0' + sec : sec}</span>
                 </h1>
-                <button onClick={this.toggleStartStop}>{this.state.timerStarted ? 'II PAUSE' : ' > START'}</button>
+                <button onClick={this.toggleStartStop}>{this.state.started ? 'II PAUSE' : ' > START'}</button>
             </div>
         );
     }
 
+    askNotificationsPermission() {
+        Notification.requestPermission().then(function (permission) {
+            if (permission === "granted") {
+                this.setState({
+                    notifiactionsEnabled: true
+                });
+            }
+        });
+    }
+
     toggleStartStop() {
-        if (this.state.timerStarted) {
+        if (this.state.started) {
             console.log('Pause timer');
             this.setState({
                 interval: null,
-                timerStarted: false
+                started: false
             });
             this.pauseCountDown();
         } else {
@@ -43,18 +57,18 @@ export default class Timer extends React.Component {
             let interval = setInterval(this.countDown, 1000);
             this.setState({
                 interval: interval,
-                timerStarted: true,
+                started: true,
             });
         }
     }
 
     countDown() {
         this.setState({
-            timerValue: this.state.timerValue - 1
+            secondsLeft: this.state.secondsLeft - 1
         });
-        if (this.state.timerValue <= 0) {
-            this.timerFinished();
+        if (this.state.secondsLeft <= 0) {
             this.pauseCountDown();
+            this.timerFinished();
         }
     }
 
@@ -63,7 +77,12 @@ export default class Timer extends React.Component {
     }
 
     timerFinished() {
-        console.log('Timer finished');
+        new Notification("Timer finished!");
+        this.setState({
+            secondsLeft: this.props.initialTimerValue,
+            started: false
+        });
+        console.log('Finished');
     }
 
     editTimer() {
