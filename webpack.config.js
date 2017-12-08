@@ -7,7 +7,7 @@ const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
 })
 
 const APP_DIR = path.resolve(__dirname, 'client');
-const BUILD_DIR = path.resolve(__dirname, 'client/build');
+const BUILD_DIR = path.resolve(__dirname, 'build');
 module.exports = {
     devtool: 'source-map',
     entry: APP_DIR + '/index.js',
@@ -17,7 +17,7 @@ module.exports = {
     },
     devServer: {
         port: 3000,
-        contentBase: './client/build'
+        contentBase: './build'
     },
     module: {
         loaders: [

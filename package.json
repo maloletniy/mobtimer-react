@@ -15,7 +15,7 @@
     "author": "Igor Maloletniy",
     "license": "MIT",
     "scripts": {
-        "build": "webpack -d",
+        "build": "webpack",
         "start": "webpack-dev-server --open"
     },
     "devDependencies": {
