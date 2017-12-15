@@ -1,4 +1,6 @@
 import React from 'react';
+import Countdown from './Countdown.jsx';
+import UserEditor from './UserEditor.jsx';
 
 export default class Timer extends React.Component {
 
@@ -8,38 +10,61 @@ export default class Timer extends React.Component {
             secondsLeft: this.props.initialTimerValue,
             started: false,
             interval: null,
-            notifiactionsEnabled: false
+            notifiactionsEnabled: false,
+            users: [{ id: 1, name: 'User 1' }, { id: 2, name: 'User 2' }]
         }
+        this.bindMethods();
+        this.askNotificationsPermission();
+    }
+
+    bindMethods() {
         this.toggleStartStop = this.toggleStartStop.bind(this);
         this.countDown = this.countDown.bind(this);
         this.stopCountDown = this.pauseCountDown.bind(this);
         this.timerFinished = this.timerFinished.bind(this);
-        this.askNotificationsPermission = this.askNotificationsPermission.bind(this);
-
-        this.askNotificationsPermission();
+        this.deleteUser = this.deleteUser.bind(this);
+        this.addUser = this.addUser.bind(this);
     }
 
     render() {
-        let min = Math.floor(this.state.secondsLeft / 60);
-        let sec = this.state.secondsLeft - min * 60;
         return (
             <div className={'timer'}>
-                <h1>
-                    <span>{min < 10 ? '0' + min : min}</span>
-                    <span>:</span>
-                    <span>{sec < 10 ? '0' + sec : sec}</span>
-                </h1>
-                <button onClick={this.toggleStartStop}>{this.state.started ? 'II PAUSE' : ' > START'}</button>
+                <Countdown secondsLeft={this.state.secondsLeft} />
+                <button
+                    onClick={this.toggleStartStop}
+                    disabled={this.state.users.length <= 0}>
+                    {this.state.started ? 'II PAUSE' : ' > START'}
+                </button>
+                <UserEditor
+                    disabled={this.state.started}
+                    users={this.state.users}
+                    onAddUser={(user) => this.addUser(user)}
+                    onDeleteUser={(user) => this.deleteUser(user)}
+                />
             </div>
         );
+    }
+
+    deleteUser(user) {
+        console.log('Delete user clicked on ' + user);
+        this.setState({
+            users: this.state.users.filter(e => e.id != user.id)
+        });
+    }
+
+    addUser(user) {
+        console.log('Adding user: ' + user);
+        let newUsers = [].concat(this.state.users);
+        newUsers.push(user);
+        this.setState({
+            users: newUsers
+        });
     }
 
     askNotificationsPermission() {
         Notification.requestPermission().then(function (permission) {
             if (permission === "granted") {
-                this.setState({
-                    notifiactionsEnabled: true
-                });
+                console.log('Permissions granted for notifications');
             }
         });
     }
